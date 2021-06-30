@@ -1,4 +1,4 @@
-#pragma kernal FunctionKernel
+#pragma kernel FunctionKernel
 
 RWStructuredBuffer<float3> _Positions;
 
@@ -7,7 +7,6 @@ uint _Resolution;
 float _Step, _Time;
 
 void SetPosition (uint3 id, float3 position) {
-    // A x A size grid
     if (id.x < _Resolution && id.y < _Resolution) {
 		_Positions[id.x + id.y * _Resolution] = position;
 	}
@@ -17,20 +16,18 @@ float2 GetUV (uint3 id) {
     return (id.xy + 0.5) * _Step - 1.0;
 }
 
-
 #define PI 3.14159265358979323846
 
 float3 Wave(float u, float v, float t) {
-    Vector3 p;
+    float3 p;
     p.x = u;
     p.y = sin(PI * (u + v + t));
     p.z = v;
     return p;
 }
 
-
 [numthreads(8, 8, 1)]
-void FunctionKernal (uint3 id: SV_DispatchThreadID) {
+void FunctionKernel (uint3 id : SV_DispatchThreadID) {
     float2 uv = GetUV(id);
     SetPosition(id, Wave(uv.x, uv.y, _Time));
 }
